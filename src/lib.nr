@@ -11,7 +11,7 @@ struct Fraction {
 }
 
 fn toFraction(s: bool, n: u32, d: u32) -> Fraction {
-    constrain d != 0;
+    assert (d != 0);
     let fr = Fraction {
         sign: s,
         num: n,
@@ -23,7 +23,7 @@ fn toFraction(s: bool, n: u32, d: u32) -> Fraction {
 
 
 fn invertFraction(f: Fraction) -> Fraction {
-    constrain f.den != 0;
+    assert (f.den != 0);
     let fr = Fraction {
         sign: f.sign,
         num: f.den,
@@ -42,7 +42,7 @@ fn multiplyFraction(f1: Fraction, f2: Fraction) -> Fraction {
 }
 
 fn divideFraction(f1: Fraction, f2: Fraction) -> Fraction {
-    constrain f2.num != 0;
+    assert (f2.num != 0);
     let fr = Fraction {
         sign: (f1.sign == f2.sign),
         num: f1.num*f2.den,
