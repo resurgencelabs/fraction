@@ -1,3 +1,4 @@
+use dep::std;
 global MAX: Fraction = Fraction { sign: true, num: 4294967295, den: 1 };
 global MIN: Fraction = Fraction { sign: false, num: 4294967295, den: 1 };
 global ZERO: Fraction = Fraction { sign: true, num: 0, den: 1 };
@@ -23,7 +24,7 @@ fn toFraction(s: bool, n: u32, d: u32) -> Fraction {
 
 
 fn invertFraction(f: Fraction) -> Fraction {
-    assert (f.den != 0);
+    assert (f.num != 0);
     let fr = Fraction {
         sign: f.sign,
         num: f.den,
@@ -131,6 +132,7 @@ fn subtractFraction(f1: Fraction, f2: Fraction) -> Fraction {
                 num: (f1.num*f2.den - f2.num*f1.den),
                 den: f1.den*f2.den,
             };
+            
             fr
         }
         else {
@@ -139,6 +141,7 @@ fn subtractFraction(f1: Fraction, f2: Fraction) -> Fraction {
                 num: (f2.num*f1.den - f1.num*f2.den),
                 den: f1.den*f2.den,
             };
+            
             fr
         }
     }
@@ -159,7 +162,7 @@ fn compareFraction(f1: Fraction, f2: Fraction) -> u32 {
     }
     else {
         
-        if ((f1.num*f2.den) > (f2.num*f2.den)){
+        if ((f1.num*f2.den) > (f2.num*f1.den)){
             if (f1.sign){
                 1
             }
@@ -168,6 +171,7 @@ fn compareFraction(f1: Fraction, f2: Fraction) -> u32 {
             }
         }
         else {
+            
             if ((f1.num*f2.den) != (f2.num*f1.den)){
                 if (f1.sign){
                     2
@@ -222,3 +226,142 @@ fn decrFraction(f: Fraction) -> Fraction {
     let fr = subtractFraction(f, dec);
     fr
 }
+
+fn isInteger(f: Fraction) -> bool {
+    if (f.num % f.den == 0) {
+        true
+    }
+    else {
+        false
+    }
+}
+
+fn isNotInteger(f: Fraction) -> bool {
+    if (f.num % f.den == 0) {
+        false
+    }
+    else {
+        true
+    }
+}
+
+#[test]
+fn test_sum() {
+    let f1 = toFraction(true, 3, 5);
+    let f2 = toFraction(true, 2, 5);
+    let f = addFraction(f1, f2);
+    assert (f.num == f.den);
+}
+
+#[test]
+fn test_sum_negative() {
+    let f1 = toFraction(true, 3, 5);
+    let f2 = toFraction(false, 1, 5);
+    let f = addFraction(f1, f2);
+    let cmp = compareFraction(f, toFraction(true, 2,5));
+    assert (cmp == 0);
+    
+}
+
+#[test]
+fn test_diff() {
+    let f1 = toFraction(true, 3, 5);
+    let f2 = toFraction(true, 2, 5);
+    let f = subtractFraction(f1, f2);
+    let cmp = compareFraction(f, toFraction(true, 1,5));
+    assert (cmp == 0);
+    
+}
+
+#[test]
+fn test_mul() {
+    let f1 = toFraction(true, 1, 5);
+    let f2 = toFraction(true, 5, 1);
+    let f = multiplyFraction(f1, f2);
+    assert (f.num == f.den);
+}
+
+#[test]
+fn test_inv() {
+    let f1 = toFraction(false, 1, 5);
+    let f2 = invertFraction(f1);
+    let f = multiplyFraction(f1, f2);
+    assert (f.num == f.den);
+    
+}
+
+
+#[test]
+fn test_div() {
+    let f1 = toFraction(true, 6, 5);
+    let f2 = toFraction(true, 5, 1);
+    let f = divideFraction(f1, f2);
+    assert (f.num == 6);
+    assert (f.den == 25);
+}
+
+#[test]
+fn test_not_integer() {
+    let f1 = toFraction(false, 1, 5);
+    
+    let is_int = isInteger(f1);
+
+    assert (!is_int);
+    
+}
+
+#[test]
+fn test_integer() {
+    let f1 = toFraction(false, 10, 5);
+    
+    let is_int = isInteger(f1);
+
+    assert (is_int);
+    
+}
+
+#[test]
+fn test_square() {
+    let f1 = toFraction(true, 4, 5);
+    
+    let f = squareFraction(f1);
+
+    assert (f.num == 16);
+    
+}
+
+#[test]
+fn test_cube() {
+    let f1 = toFraction(false, 1, 5);
+    
+    let f = cubeFraction(f1);
+
+    assert (f.num == 1);
+    assert (f.den == 125);
+    assert (!f.sign);
+    
+}
+
+#[test]
+fn test_compare() {
+    let f1 = toFraction(true, 4, 5);
+    let f2 = toFraction(true, 8, 10);
+    
+    let cmp = compareFraction(f1, f2);
+
+    assert (cmp == 0);
+    
+}
+
+
+#[test]
+fn test_reduce() {
+    let f1 = toFraction(true, 2, 10);
+    let f2 = reduceFraction(f1);
+    
+    
+
+    assert (f2.num == 1);
+    
+}
+
