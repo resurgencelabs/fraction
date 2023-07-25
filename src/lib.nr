@@ -152,17 +152,11 @@ fn subtractFraction(f1: Fraction, f2: Fraction) -> Fraction {
 // if a < b return 2
 // if a == b return 0
 fn compareFraction(f1: Fraction, f2: Fraction) -> u32 {
-    if (f1.sign != f2.sign){
-        if (f1.sign){
-            1
-        }
-        else {
-            2
-        }
+    if ((f1.num == f2.num) & (f1.num == 0)){
+        0
     }
     else {
-        
-        if ((f1.num*f2.den) > (f2.num*f1.den)){
+        if (f1.sign != f2.sign){
             if (f1.sign){
                 1
             }
@@ -172,21 +166,33 @@ fn compareFraction(f1: Fraction, f2: Fraction) -> u32 {
         }
         else {
             
-            if ((f1.num*f2.den) != (f2.num*f1.den)){
+            if ((f1.num*f2.den) > (f2.num*f1.den)){
                 if (f1.sign){
-                    2
+                    1
                 }
                 else {
-                    1
+                    2
                 }
             }
             else {
-                0
+                
+                if ((f1.num*f2.den) != (f2.num*f1.den)){
+                    if (f1.sign){
+                        2
+                    }
+                    else {
+                        1
+                    }
+                }
+                else {
+                    0
+                }
+                
             }
             
         }
-        
     }
+    
 }
 
 fn squareFraction(f: Fraction) -> Fraction {
@@ -346,7 +352,6 @@ fn test_cube() {
 fn test_compare() {
     let f1 = toFraction(true, 4, 5);
     let f2 = toFraction(true, 8, 10);
-    
     let cmp = compareFraction(f1, f2);
 
     assert (cmp == 0);
@@ -358,10 +363,18 @@ fn test_compare() {
 fn test_reduce() {
     let f1 = toFraction(true, 2, 10);
     let f2 = reduceFraction(f1);
-    
-    
 
     assert (f2.num == 1);
+    
+}
+
+#[test]
+fn test_zero_neutrality() {
+    let f1 = toFraction(true, 0, 5);
+    let f2 = toFraction(false, 0, 10);
+    let cmp = compareFraction(f1, f2);
+
+    assert (cmp == 0);
     
 }
 
