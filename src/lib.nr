@@ -11,6 +11,8 @@ struct Fraction {
     den: u32,
 }
 
+
+// Create a Fraction type variable without lenghtier code
 fn toFraction(s: bool, n: u32, d: u32) -> Fraction {
     assert (d != 0);
     let fr = Fraction {
@@ -22,7 +24,7 @@ fn toFraction(s: bool, n: u32, d: u32) -> Fraction {
 }
 
 
-
+// Swaps the numerator and denominator
 fn invertFraction(f: Fraction) -> Fraction {
     assert (f.num != 0);
     let fr = Fraction {
@@ -33,6 +35,8 @@ fn invertFraction(f: Fraction) -> Fraction {
     fr
 }
 
+
+// Multiplies two fractions
 fn multiplyFraction(f1: Fraction, f2: Fraction) -> Fraction {
     let fr = Fraction {
         sign: (f1.sign == f2.sign),
@@ -42,6 +46,8 @@ fn multiplyFraction(f1: Fraction, f2: Fraction) -> Fraction {
     fr
 }
 
+
+// Divides the first fraction by the second
 fn divideFraction(f1: Fraction, f2: Fraction) -> Fraction {
     assert (f2.num != 0);
     let fr = Fraction {
@@ -86,6 +92,8 @@ fn reduceFraction(f: Fraction) -> Fraction {
     fr
 }
 
+
+// Adds two fractions
 fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
     if f1.sign == f2.sign {
         let fr = Fraction {
@@ -116,6 +124,7 @@ fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
 }
 
 
+// Subtract the second fraction from the first
 fn subtractFraction(f1: Fraction, f2: Fraction) -> Fraction {
     if f1.sign != f2.sign {
         let fr = Fraction {
@@ -195,6 +204,8 @@ fn compareFraction(f1: Fraction, f2: Fraction) -> u32 {
     
 }
 
+
+// Multiplies a fraction by itself
 fn squareFraction(f: Fraction) -> Fraction {
     let fr = Fraction {
         sign: true,
@@ -204,6 +215,8 @@ fn squareFraction(f: Fraction) -> Fraction {
     fr
 }
 
+
+// Multiplies a fraction by itself, then again by itself
 fn cubeFraction(f: Fraction) -> Fraction {
     let fr = Fraction {
         sign: f.sign,
@@ -213,6 +226,8 @@ fn cubeFraction(f: Fraction) -> Fraction {
     fr
 }
 
+
+// Adds 1 to the fraction
 fn incrFraction(f: Fraction) -> Fraction {
     let inc = Fraction {
         sign: true,
@@ -223,6 +238,8 @@ fn incrFraction(f: Fraction) -> Fraction {
     fr
 }
 
+
+// Subtracts 1 from the fraction
 fn decrFraction(f: Fraction) -> Fraction {
     let dec = Fraction {
         sign: true,
@@ -233,6 +250,8 @@ fn decrFraction(f: Fraction) -> Fraction {
     fr
 }
 
+
+// Returns true if the fraction can be represented as an Integer
 fn isInteger(f: Fraction) -> bool {
     if (f.num % f.den == 0) {
         true
@@ -242,6 +261,8 @@ fn isInteger(f: Fraction) -> bool {
     }
 }
 
+
+// Returns true if the fraction can NOT be represented as an Integer
 fn isNotInteger(f: Fraction) -> bool {
     if (f.num % f.den == 0) {
         false
