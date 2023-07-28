@@ -253,22 +253,99 @@ fn decrFraction(f: Fraction) -> Fraction {
 
 // Returns true if the fraction can be represented as an Integer
 fn isInteger(f: Fraction) -> bool {
-    if (f.num % f.den == 0) {
+    if f.num == 0 {
         true
     }
     else {
-        false
+        if (f.num % f.den == 0) {
+            true
+        }
+        else {
+            false
+        }
     }
+    
 }
 
 
 // Returns true if the fraction can NOT be represented as an Integer
 fn isNotInteger(f: Fraction) -> bool {
-    if (f.num % f.den == 0) {
+    if f.num == 0 {
         false
     }
     else {
-        true
+        if (f.num % f.den == 0) {
+            false
+        }
+        else {
+            true
+        }
+    }
+    
+}
+
+
+// Returns the closest but smaller Integer to the Given Fraction, but typecast to Fraction for convenience
+fn floor(f: Fraction) -> Fraction {
+    let q = f.num/f.den;
+    if (q * f.den == f.num){
+        let fr = Fraction{
+            sign: f.sign,
+            num: f.num,
+            den: f.den,
+        };
+        fr
+    }
+    else {
+        if f.sign {
+            let fr = Fraction{
+                sign: f.sign,
+                num: q,
+                den: 1,
+            };
+            fr    
+        }
+        else {
+            let fr = Fraction{
+                sign: f.sign,
+                num: q + 1,
+                den: 1,
+            };
+            fr 
+        }
+        
+    }
+}
+
+// Returns the closest but greater Integer to the Given Fraction, but typecast to Fraction for convenience
+fn ceiling(f: Fraction) -> Fraction {
+    let q = f.num/f.den;
+    if (q * f.den == f.num){
+        let fr = Fraction{
+            sign: f.sign,
+            num: f.num,
+            den: f.den,
+        };
+        fr
+    }
+    else {
+        if f.sign {
+            let fr = Fraction{
+                sign: f.sign,
+                num: q + 1,
+                den: 1,
+            };
+            fr    
+        }
+        else {
+            let fr = Fraction{
+                sign: f.sign,
+                num: q,
+                den: 1,
+            };
+            fr 
+        }
+        
     }
 }
 
@@ -399,3 +476,35 @@ fn test_zero_neutrality() {
     
 }
 
+#[test]
+fn test_floor() {
+    let f = toFraction(true, 7, 5);
+    let fl = floor(f);
+    assert (fl.num == 1);
+    assert (fl.den == 1);
+}
+
+#[test]
+fn test_floor2() {
+    let f = toFraction(false, 12, 5);
+    let fl = floor(f);
+    assert (fl.num == 3);
+    assert (fl.den == 1);
+}
+
+
+#[test]
+fn test_ceiling() {
+    let f = toFraction(true, 7, 5);
+    let ce = ceiling(f);
+    assert (ce.num == 2);
+    assert (ce.den == 1);
+}
+
+#[test]
+fn test_ceiling2() {
+    let f = toFraction(false, 12, 5);
+    let ce = ceiling(f);
+    assert (ce.num == 2);
+    assert (ce.den == 1);
+}
