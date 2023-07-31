@@ -508,3 +508,12 @@ fn test_ceiling2() {
     assert (ce.num == 2);
     assert (ce.den == 1);
 }
+
+#[test]
+fn test_globals() {
+    let o = ONE;
+    let no = NEGATIVE_ONE;
+    let z = ZERO;
+    let a = addFraction(o , no);
+    assert (a.num == z.num);
+}
