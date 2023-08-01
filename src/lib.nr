@@ -1,6 +1,6 @@
 use dep::std;
-global MAX: Fraction = Fraction { sign: true, num: 4294967295, den: 1 };
-global MIN: Fraction = Fraction { sign: false, num: 4294967295, den: 1 };
+global MAX: Fraction = Fraction { sign: true, num: 3050913689, den: 1 };
+global MIN: Fraction = Fraction { sign: false, num: 3050913689, den: 1 };
 global ZERO: Fraction = Fraction { sign: true, num: 0, den: 1 };
 global ONE: Fraction = Fraction { sign: true, num: 1, den: 1 };
 global NEGATIVE_ONE: Fraction = Fraction { sign: false, num: 1, den: 1 };
