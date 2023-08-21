@@ -38,23 +38,80 @@ fn invertFraction(f: Fraction) -> Fraction {
 
 // Multiplies two fractions
 fn multiplyFraction(f1: Fraction, f2: Fraction) -> Fraction {
-    let fr = Fraction {
-        sign: (f1.sign == f2.sign),
-        num: f1.num*f2.num,
-        den: f1.den*f2.den,
-    };
-    fr
+    let mut an = f1.num as u84;
+    let mut ad = f1.den as u84;
+    let mut bn = f2.num as u84;
+    let mut bd = f2.den as u84;
+    let mut m = f1;
+    let mut n = f2;
+    
+
+    if ((an*bn > 2000000000) | (ad*bd > 2000000000)) {
+        m = reduceFraction(m);
+        n = reduceFraction(n);
+    }
+
+    an = m.num as u84;
+    ad = m.den as u84;
+    bn = n.num as u84;
+    bd = n.den as u84;
+
+    
+    if ((an*bn > 2000000000) | (ad*bd > 2000000000)) {
+        let mut c = Fraction{ sign: m.sign, num: m.num, den: n.den};
+        let mut d = Fraction{ sign: n.sign, num: n.num, den: m.den};
+        c = reduceFraction(c);
+        d = reduceFraction(d);
+        an = c.num as u84;
+        ad = c.den as u84;
+        bn = d.num as u84;
+        bd = d.den as u84;
+    }
+
+    
+    let mut ddd = (an*bn)/(ad*bd);
+    let mut factor = 1 as u84;
+    for i in 1..5{
+        if ddd*10 < 2000000000 {
+            factor *= 10;
+            ddd = ddd * 10;
+        }
+    }
+    
+    if ((an*bn > 2000000000) | (ad*bd > 2000000000)) {
+        let np = ((an*bn*factor)/(ad*bd)) as u32;
+        std::println(ddd);
+        let fr = Fraction{
+            sign: (f1.sign == f2.sign),
+            num: np,
+            den: factor as u32,
+        };
+        fr
+        
+    }
+    else {
+        let fr = Fraction {
+            sign: (m.sign == n.sign),
+            num: m.num*n.num,
+            den: m.den*n.den,
+        };
+        fr
+        
+    }
+    
+    
 }
 
-
-// Divides the first fraction by the second
+// Divides the first fraction by the second and outputs the quotient
 fn divideFraction(f1: Fraction, f2: Fraction) -> Fraction {
     assert (f2.num != 0);
-    let fr = Fraction {
-        sign: (f1.sign == f2.sign),
-        num: f1.num*f2.den,
-        den: f1.den*f2.num,
+    let f3 = Fraction {
+        sign: f2.sign,
+        num: f2.den,
+        den: f2.num,
     };
+    let fr = multiplyFraction(f1, f3);
+    
     fr
 }
 
@@ -95,66 +152,141 @@ fn reduceFraction(f: Fraction) -> Fraction {
 
 // Adds two fractions
 fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
+    let mut an = f1.num as u84;
+    let mut ad = f1.den as u84;
+    let mut bn = f2.num as u84;
+    let mut bd = f2.den as u84;
+    let mut m = f1;
+    let mut n = f2;
+
     if f1.sign == f2.sign {
-        let fr = Fraction {
-            sign: f1.sign,
-            num: (f1.num*f2.den + f2.num*f1.den),
-            den: f1.den*f2.den,
-        };
-        fr
-    }
-    else {
-        if ((f1.num*f2.den) > (f2.num*f1.den)){
+       
+        if ((ad*bd > 2000000000) | ((an*bd + ad*bn) > 2000000000)){
+            m = reduceFraction(m);
+            n = reduceFraction(n);
+        }
+        an = m.num as u84;
+        ad = m.den as u84;
+        bn = n.num as u84;
+        bd = n.den as u84;
+        if ((ad*bd > 2000000000) | ((an*bd + ad*bn) > 2000000000)){
+            let mut ddd = (an*bd + ad*bn)/(ad*bd);
+            let mut factor = 1 as u84;
+            for i in 1..5{
+                if ddd*10 < 2000000000 {
+                    ddd *= 10;
+                    factor *= 10;
+                }
+            }
+            let np = (((an*bd + ad*bn)*factor)/(ad*bd)) as u32;
             let fr = Fraction {
                 sign: f1.sign,
-                num: (f1.num*f2.den-f2.num*f1.den),
-                den: f1.den*f2.den,
+                num: np,
+                den: factor as u32, 
             };
             fr
         }
         else {
             let fr = Fraction {
-                sign: f2.sign,
-                num: (f2.num*f1.den-f1.num*f2.den),
-                den: f1.den*f2.den,
+                sign: f1.sign,
+                num: (m.num*n.den + n.num*m.den),
+                den: m.den*n.den,
             };
             fr
+        }
+        
+        
+    }
+    else {
+
+        if ((an*bd) > (bn*ad)){
+            if ((ad*bd > 2000000000) | ((an*bd - ad*bn) > 2000000000)){
+                m = reduceFraction(m);
+                n = reduceFraction(n);
+            }
+            an = m.num as u84;
+            ad = m.den as u84;
+            bn = n.num as u84;
+            bd = n.den as u84;
+            if ((ad*bd > 2000000000) | ((an*bd - ad*bn) > 2000000000)){
+                let mut ddd = (an*bd - ad*bn)/(ad*bd);
+                let mut factor = 1 as u84;
+                for i in 1..5{
+                    if ddd*10 < 2000000000 {
+                        ddd *= 10;
+                        factor *= 10;
+                    }
+                }
+                let np = (((an*bd - ad*bn)*factor)/(ad*bd)) as u32;
+                let fr = Fraction {
+                    sign: f1.sign,
+                    num: np,
+                    den: factor as u32, 
+                };
+                fr
+            }
+            else {
+                let fr = Fraction {
+                    sign: f1.sign,
+                    num: (m.num*n.den - n.num*m.den),
+                    den: m.den*n.den,
+                };
+                fr
+            }
+        }
+        else {
+            if ((ad*bd > 2000000000) | ((bn*ad - bd*an) > 2000000000)){
+                m = reduceFraction(m);
+                n = reduceFraction(n);
+            }
+            an = m.num as u84;
+            ad = m.den as u84;
+            bn = n.num as u84;
+            bd = n.den as u84;
+            if ((ad*bd > 2000000000) | ((bn*ad - bd*an) > 2000000000)){
+                let mut ddd = (bn*ad - bd*an)/(ad*bd);
+                let mut factor = 1 as u84;
+                for i in 1..5{
+                    if ddd*10 < 2000000000 {
+                        ddd *= 10;
+                        factor *= 10;
+                    }
+                }
+                let np = (((bn*ad - bd*an)*factor)/(ad*bd)) as u32;
+                let fr = Fraction {
+                    sign: f2.sign,
+                    num: np,
+                    den: factor as u32, 
+                };
+                fr
+            }
+            else {
+                let fr = Fraction {
+                    sign: f2.sign,
+                    num: (n.num*m.den - m.num*n.den),
+                    den: m.den*n.den,
+                };
+                fr
+            }
         }
     }
 }
 
 
-// Subtract the second fraction from the first
+// Subtracts the second fraction from the first
 fn subtractFraction(f1: Fraction, f2: Fraction) -> Fraction {
-    if f1.sign != f2.sign {
-        let fr = Fraction {
-            sign: f1.sign,
-            num: (f1.num*f2.den + f2.num*f1.den),
-            den: f1.den*f2.den,
-        };
-        fr
-    }
-    else {
-        if ((f1.num*f2.den) > (f2.num*f1.den)){
-            let fr = Fraction {
-                sign: f1.sign,
-                num: (f1.num*f2.den - f2.num*f1.den),
-                den: f1.den*f2.den,
-            };
-            
-            fr
-        }
-        else {
-            let fr = Fraction {
-                sign: f2.sign,
-                num: (f2.num*f1.den - f1.num*f2.den),
-                den: f1.den*f2.den,
-            };
-            
-            fr
-        }
-    }
+    let f3 = Fraction {
+        sign: !f2.sign,
+        num: f2.num,
+        den: f2.den,
+    };
+    let fr = addFraction(f1, f3);
+    
+    fr
 }
+
+
+
 
 
 // if a > b return 1
@@ -516,4 +648,28 @@ fn test_globals() {
     let z = ZERO;
     let a = addFraction(o , no);
     assert (a.num == z.num);
+}
+
+
+#[test]
+fn test_mul_large() {
+    let f1 = toFraction(true, 33333333, 5);
+    let f2 = toFraction(true, 500000, 77777);
+    let m = multiplyFraction(f1, f2);
+    
+    let p = m.num;
+    let q = m.den;
+    let lm = p/q;
+    assert (lm == 42857571);
+    
+}
+
+
+#[test]
+fn test_add_large() {
+    let f1 = toFraction(true, 33333333, 5);
+    let f2 = toFraction(true, 500000, 33333333);
+    let a = addFraction(f1, f2);
+    
+    assert (compareFraction(floor(a), MAX) == 2);
 }
