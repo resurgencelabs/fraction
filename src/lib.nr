@@ -35,6 +35,16 @@ fn invertFraction(f: Fraction) -> Fraction {
     fr
 }
 
+// Changes the Sign of the Fraction
+fn signChangeFraction(f: Fraction) -> Fraction {
+    let fr = Fraction {
+        sign: !f.sign,
+        num: f.num,
+        den: f.den,
+    };
+    fr
+}
+
 
 // Multiplies two fractions
 fn multiplyFraction(f1: Fraction, f2: Fraction) -> Fraction {
@@ -481,6 +491,149 @@ fn ceiling(f: Fraction) -> Fraction {
     }
 }
 
+
+// an approximation of the Sine function using the Taylor series
+// since pi is not "exactly" equal to 22/7, the results are only an approximation (4 decimal digits)
+fn sin(x: Fraction) -> Fraction {
+    let max = Fraction {
+        sign: true,
+        num: 44,
+        den: 7,
+    };
+    assert (compareFraction(max, x) <= 1);
+    assert (compareFraction(x, ZERO) <= 1);
+    let mut f = x;
+    let mut flag = true;
+    let quart = Fraction {
+        sign: true,
+        num: 11,
+        den: 7,
+    };
+    let mid = Fraction {
+        sign: true,
+        num: 22,
+        den: 7,
+    };
+    let th_quart = Fraction {
+        sign: true,
+        num: 33,
+        den: 7,
+    };
+    if (compareFraction(max, x) <= 1){
+        f = subtractFraction(max, x);
+        flag = false;
+    }
+    if (compareFraction(th_quart, x) <= 1){
+        let f2 = subtractFraction(th_quart, x);
+        f = subtractFraction(quart, f2);
+        flag = false;
+    }
+    if (compareFraction(mid, x) <= 1){
+        f = subtractFraction(mid, x);
+        flag = true;
+    }
+    if (compareFraction(quart, x) <= 1){
+        f = x;
+        flag = true;
+    }
+    let mut sum = ZERO;
+    let mut part_sum = ONE;
+    let mut fact: u32 = 1;
+    let mut k: u32 = 0;
+    for i in 1..10{
+        part_sum = multiplyFraction(part_sum, f);
+        fact = fact * (i as u32);
+        let j = i as u32;
+        if j % 2 == 1{
+            let fact_to_fract = toFraction(true, fact, 1);
+            let partial = divideFraction(part_sum, fact_to_fract);
+            if k % 2 == 0 {
+                sum = addFraction(sum, partial);
+            }
+            else {
+                sum = subtractFraction(sum, partial);
+            }
+            k += 1;
+        }
+    }
+    if !flag {
+        sum = signChangeFraction(sum);
+    }
+    sum
+}
+
+
+// an approximation of the Cosine function using the Taylor series
+// since pi is not "exactly" equal to 22/7, the results are only an approximation (4 decimal digits)
+fn cos(x: Fraction) -> Fraction {
+    let max = Fraction {
+        sign: true,
+        num: 44,
+        den: 7,
+    };
+    assert (compareFraction(max, x) <= 1);
+    assert (compareFraction(x, ZERO) <= 1);
+    let mut f = x;
+    let mut flag = true;
+    let quart = Fraction {
+        sign: true,
+        num: 11,
+        den: 7,
+    };
+    let mid = Fraction {
+        sign: true,
+        num: 22,
+        den: 7,
+    };
+    let th_quart = Fraction {
+        sign: true,
+        num: 33,
+        den: 7,
+    };
+    if (compareFraction(max, x) <= 1){
+        f = subtractFraction(max, x);
+        flag = true;
+    }
+    if (compareFraction(th_quart, x) <= 1){
+        let f2 = subtractFraction(th_quart, x);
+        f = subtractFraction(quart, f2);
+        flag = false;
+    }
+    if (compareFraction(mid, x) <= 1){
+        f = subtractFraction(mid, x);
+        flag = false;
+    }
+    if (compareFraction(quart, x) <= 1){
+        f = x;
+        flag = true;
+    }
+    let mut sum = ONE;
+    let mut part_sum = ONE;
+    let mut fact: u32 = 1;
+    let mut k: u32 = 0;
+    for i in 1..12{
+        part_sum = multiplyFraction(part_sum, f);
+        fact = fact * (i as u32);
+        let j = i as u32;
+        if j % 2 == 0{
+            let fact_to_fract = toFraction(true, fact, 1);
+            let partial = divideFraction(part_sum, fact_to_fract);
+            if k % 2 == 1 {
+                sum = addFraction(sum, partial);
+            }
+            else {
+                sum = subtractFraction(sum, partial);
+            }
+            k += 1;
+        }
+    }
+    if !flag{
+        sum = signChangeFraction(sum);
+    }
+    sum
+}
+
+
 #[test]
 fn test_sum() {
     let f1 = toFraction(true, 3, 5);
@@ -673,3 +826,37 @@ fn test_add_large() {
     
     assert (compareFraction(floor(a), MAX) == 2);
 }
+
+/*
+#[test]
+fn test_sin() {
+    std::println("hi");
+    let f1 = toFraction(true, 0, 7);
+    let res = sin(f1);
+    
+    let p = res.num;
+    std::println(p);
+    let sig = res.sign;
+    let mut fl = 0;
+    if sig{
+        fl = 1;
+    }
+    //assert (fl == 1);
+    //assert (p == 0); 
+}
+
+#[test]
+fn test_cos() {
+    let f1 = toFraction(true, 11, 7);
+    let res = cos(f1);
+
+    let sig = res.sign;
+    let mut fl = 0;
+    if sig{
+        fl = 1;
+    }
+    assert (fl == 1);
+    assert (compareFraction(toFraction(true, 1, 1000), f1) != 2);
+    
+}
+*/
