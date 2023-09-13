@@ -368,6 +368,50 @@ fn cubeFraction(f: Fraction) -> Fraction {
     fr
 }
 
+// Only a helper function for trigonometric computations
+// Warning: Do NOT fork and remove the assert limits. It will crash your machine for big values
+fn powerSmallFraction(f: Fraction, k: u8) -> Fraction {
+    assert (k >= 1);
+    assert (k < 10);
+    assert ((f.num * 7) <= (11 * f.den));
+    let mut n = f.num as u95;
+    let mut d = f.den as u95;
+    if f.den > 1000 {
+        n = (n*1000)/d;
+        d = 1000;
+    }
+    if n == 0{
+        let fr = Fraction {
+            sign: true,
+            num: 0,
+            den: 1,
+        };
+        fr
+    }
+    else {
+        let mut nprod: u95 = 1;
+        let mut dprod: u95 = 1;
+        let mut s = true;
+        if ((!f.sign) & (k % 2 == 1)){
+            s = false;
+        }
+        for i in 1..10 {
+            if i as u8 <= k {
+                nprod = nprod * n;
+                dprod = dprod * d;
+            }
+        }
+        let new_num = ((nprod*10000)/dprod) as u32;
+        let fr = Fraction {
+            sign: s,
+            num: new_num,
+            den: 10000,
+        };
+        fr
+
+    }
+}
+
 
 // Adds 1 to the fraction
 fn incrFraction(f: Fraction) -> Fraction {
@@ -537,27 +581,25 @@ fn sin(x: Fraction) -> Fraction {
         flag = true;
     }
     let mut sum = ZERO;
-    let mut part_sum = ONE;
-    let mut fact: u32 = 1;
-    let mut k: u32 = 0;
-    for i in 1..10{
-        part_sum = multiplyFraction(part_sum, f);
-        fact = fact * (i as u32);
-        let j = i as u32;
-        if j % 2 == 1{
-            let fact_to_fract = toFraction(true, fact, 1);
-            let partial = divideFraction(part_sum, fact_to_fract);
-            if k % 2 == 0 {
-                sum = addFraction(sum, partial);
-            }
-            else {
-                sum = subtractFraction(sum, partial);
-            }
-            k += 1;
-        }
-    }
-    if !flag {
+    
+    let t1 = f;
+    let t2 = divideFraction(powerSmallFraction(f, 3), toFraction(true, 6, 1));
+    let t3 = divideFraction(powerSmallFraction(f, 5), toFraction(true, 120, 1));
+    let t4 = divideFraction(powerSmallFraction(f, 7), toFraction(true, 5040, 1));
+    let t5 = divideFraction(powerSmallFraction(f, 9), toFraction(true, 362880, 1));
+
+    let s1 = addFraction(addFraction(t3, t5), t1);
+    let s2 = addFraction(t2, t4);
+
+    sum = subtractFraction(s1, s2);
+
+    
+
+    if (flag != sum.sign) {
         sum = signChangeFraction(sum);
+    }
+    if sum.num == 0 {
+        sum.sign = true;
     }
     sum
 }
@@ -607,28 +649,27 @@ fn cos(x: Fraction) -> Fraction {
         f = x;
         flag = true;
     }
+    
     let mut sum = ONE;
-    let mut part_sum = ONE;
-    let mut fact: u32 = 1;
-    let mut k: u32 = 0;
-    for i in 1..12{
-        part_sum = multiplyFraction(part_sum, f);
-        fact = fact * (i as u32);
-        let j = i as u32;
-        if j % 2 == 0{
-            let fact_to_fract = toFraction(true, fact, 1);
-            let partial = divideFraction(part_sum, fact_to_fract);
-            if k % 2 == 1 {
-                sum = addFraction(sum, partial);
-            }
-            else {
-                sum = subtractFraction(sum, partial);
-            }
-            k += 1;
-        }
-    }
-    if !flag{
+   
+    let t1 = toFraction(true, 1, 1);
+    let t2 = divideFraction(powerSmallFraction(f, 2), toFraction(true, 2, 1));
+    let t3 = divideFraction(powerSmallFraction(f, 4), toFraction(true, 24, 1));
+    let t4 = divideFraction(powerSmallFraction(f, 6), toFraction(true, 720, 1));
+    let t5 = divideFraction(powerSmallFraction(f, 8), toFraction(true, 40320, 1));
+
+    let s1 = addFraction(addFraction(t3, t1), t5);
+    let s2 = addFraction(t2, t4);
+
+    sum = subtractFraction(s1, s2);
+
+    
+    
+    if (flag != sum.sign){
         sum = signChangeFraction(sum);
+    }
+    if sum.num == 0 {
+        sum.sign = true;
     }
     sum
 }
@@ -827,27 +868,29 @@ fn test_add_large() {
     assert (compareFraction(floor(a), MAX) == 2);
 }
 
-/*
+
 #[test]
 fn test_sin() {
-    std::println("hi");
-    let f1 = toFraction(true, 0, 7);
+    let f1 = toFraction(true, 11, 7);
     let res = sin(f1);
     
     let p = res.num;
-    std::println(p);
+    let q = res.den;
+    
     let sig = res.sign;
     let mut fl = 0;
     if sig{
         fl = 1;
     }
-    //assert (fl == 1);
-    //assert (p == 0); 
+
+    
+    assert (fl == 1);
+    assert (compareFraction(toFraction(true, 1,1), res) <= 1); 
 }
 
 #[test]
 fn test_cos() {
-    let f1 = toFraction(true, 11, 7);
+    let f1 = toFraction(true, 3141, 2000);
     let res = cos(f1);
 
     let sig = res.sign;
@@ -855,8 +898,8 @@ fn test_cos() {
     if sig{
         fl = 1;
     }
+    
     assert (fl == 1);
-    assert (compareFraction(toFraction(true, 1, 1000), f1) != 2);
+    assert (compareFraction(toFraction(true, 1, 10000), res) != 2);
     
 }
-*/

@@ -2,6 +2,6 @@
 name = "fraction"
 type = "lib"
 authors = [""]
-compiler_version = "0.10.5"
+compiler_version = "0.11.1"
 
 [dependencies]
