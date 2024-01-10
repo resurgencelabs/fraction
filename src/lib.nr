@@ -374,11 +374,11 @@ fn powerSmallFraction(f: Fraction, k: u8) -> Fraction {
     assert (k >= 1);
     assert (k < 10);
     assert ((f.num * 7) <= (11 * f.den));
-    let mut n = f.num as u95;
-    let mut d = f.den as u95;
-    if f.den > 1000 {
-        n = (n*1000)/d;
-        d = 1000;
+    let mut n = f.num as u120;
+    let mut d = f.den as u120;
+    if f.den > 10000 {
+        n = (n*10000)/d;
+        d = 10000;
     }
     if n == 0{
         let fr = Fraction {
@@ -389,8 +389,8 @@ fn powerSmallFraction(f: Fraction, k: u8) -> Fraction {
         fr
     }
     else {
-        let mut nprod: u95 = 1;
-        let mut dprod: u95 = 1;
+        let mut nprod: u120 = 1;
+        let mut dprod: u120 = 1;
         let mut s = true;
         if ((!f.sign) & (k % 2 == 1)){
             s = false;
@@ -533,6 +533,47 @@ fn ceiling(f: Fraction) -> Fraction {
         }
         
     }
+}
+
+
+// returns the approximate square root of the Fraction
+fn sqrt(x: Fraction) -> Fraction {
+    assert((x.sign != false) | (x.num == 0));
+    if x.num == 0 {
+        x
+    }
+    else {
+        let mut sqrt_approx = Fraction {
+            sign: true,
+            num: (x.num + 1)/2,
+            den: x.den,
+        };
+        
+        let p = x.num as u84;
+        let q = x.den as u84;
+
+        let mut c_init = sqrt_approx.num as u84;
+        let mut d_init = sqrt_approx.den as u84;
+
+        let mut c = c_init;
+        let mut d = d_init;
+
+
+        for i in 1..10 {
+            c = (q*c_init*c_init + p*d_init*d_init);
+            d = 2*q*c_init*d_init;
+            c_init = (c*10000)/d;
+            d_init = 10000;
+        }
+
+        let fr = Fraction {
+            sign: true,
+            num: c_init as u32,
+            den: 10000,
+        };
+        fr  
+    }
+    
 }
 
 
@@ -900,6 +941,46 @@ fn test_cos() {
     }
     
     assert (fl == 1);
-    assert (compareFraction(toFraction(true, 1, 10000), res) != 2);
+    let m = res.num;
+    let n = res.den;
+    assert (compareFraction(toFraction(true, 5, 10000), res) != 2);
+    
+}
+
+#[test]
+fn test_sqrt1(){
+    let f1 = toFraction(true, 3, 8);
+    let sqrt = sqrt(f1);
+    let delta = subtractFraction(f1, squareFraction(sqrt));
+    let epsilon = Fraction {
+        sign: true,
+        num: 1,
+        den: 1000,
+    };
+    if !delta.sign {
+        assert (compareFraction(epsilon, signChangeFraction(delta)) <= 1);
+    }
+    else {
+        assert (compareFraction(epsilon, delta) <= 1);
+    }
+    
+}
+
+#[test]
+fn test_sqrt2(){
+    let f1 = toFraction(true, 999999, 444444);
+    let sqrt = sqrt(f1);
+    let delta = subtractFraction(f1, squareFraction(sqrt));
+    let epsilon = Fraction {
+        sign: true,
+        num: 1,
+        den: 1000,
+    };
+    if !delta.sign {
+        assert (compareFraction(epsilon, signChangeFraction(delta)) <= 1);
+    }
+    else {
+        assert (compareFraction(epsilon, delta) <= 1);
+    }
     
 }
