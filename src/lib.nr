@@ -534,7 +534,12 @@ fn ceiling(f: Fraction) -> Fraction {
 
 
 // returns the approximate square root of the Fraction
-fn sqrt(x: Fraction) -> Fraction {
+// passes refers to the number of iterations run to add more precision
+// for num and den < 10000, passes = 10 is a good choice
+// for num or den > 10000, passes = 15 is reasonable
+// it should be noted that more passes lead to more gas usage, hence a tradeoff 
+// between precision and viability is recommended 
+unconstrained fn sqrt(x: Fraction, passes: u8) -> Fraction {
     assert((x.sign != false) | (x.num == 0));
     if x.num == 0 {
         x
@@ -546,27 +551,27 @@ fn sqrt(x: Fraction) -> Fraction {
             den: x.den,
         };
         
-        let p = x.num as u84;
-        let q = x.den as u84;
+        let p = x.num as u120;
+        let q = x.den as u120;
 
-        let mut c_init = sqrt_approx.num as u84;
-        let mut d_init = sqrt_approx.den as u84;
+        let mut c_init = sqrt_approx.num as u120;
+        let mut d_init = sqrt_approx.den as u120;
 
         let mut c = c_init;
         let mut d = d_init;
 
 
-        for i in 1..10 {
+        for i in 0..passes {
             c = (q*c_init*c_init + p*d_init*d_init);
             d = 2*q*c_init*d_init;
-            c_init = (c*100000)/d;
-            d_init = 100000;
+            c_init = (c*1000000)/d;
+            d_init = 1000000;
         }
 
         let fr = Fraction {
             sign: true,
             num: c_init as u32,
-            den: 100000,
+            den: 1000000,
         };
         fr  
     }
@@ -947,7 +952,7 @@ fn test_cos() {
 #[test]
 fn test_sqrt1(){
     let f1 = toFraction(true, 3, 8);
-    let sqrt = sqrt(f1);
+    let sqrt = sqrt(f1, 10);
     let delta = subtractFraction(f1, squareFraction(sqrt));
     let epsilon = Fraction {
         sign: true,
@@ -965,16 +970,14 @@ fn test_sqrt1(){
 
 #[test]
 fn test_sqrt2(){
-    let f1 = toFraction(true, 999999, 444);
-    let sqrt = sqrt(f1);
+    let f1 = toFraction(true, 9999999, 444);
+    let sqrt = sqrt(f1, 15);
     let delta = subtractFraction(f1, squareFraction(sqrt));
     let epsilon = Fraction {
         sign: true,
         num: 1,
         den: 1000,
     };
-    let p = delta.num;
-    let q = delta.den;
     if !delta.sign {
         assert (compareFraction(epsilon, signChangeFraction(delta)) <= 1);
     }
