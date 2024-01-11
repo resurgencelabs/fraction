@@ -90,7 +90,6 @@ fn multiplyFraction(f1: Fraction, f2: Fraction) -> Fraction {
     
     if ((an*bn > 2000000000) | (ad*bd > 2000000000)) {
         let np = ((an*bn*factor)/(ad*bd)) as u32;
-        std::println(ddd);
         let fr = Fraction{
             sign: (f1.sign == f2.sign),
             num: np,
@@ -171,7 +170,7 @@ fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
 
     if f1.sign == f2.sign {
        
-        if ((ad*bd > 2000000000) | ((an*bd + ad*bn) > 2000000000)){
+        if ((ad*bd > 2000000000) | ((an*bd + ad*bn) > 2000000000) | ((an*bd) > 2000000000) | ((ad*bn) > 2000000000)){
             m = reduceFraction(m);
             n = reduceFraction(n);
         }
@@ -179,7 +178,7 @@ fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
         ad = m.den as u84;
         bn = n.num as u84;
         bd = n.den as u84;
-        if ((ad*bd > 2000000000) | ((an*bd + ad*bn) > 2000000000)){
+        if ((ad*bd > 2000000000) | ((an*bd + ad*bn) > 2000000000) | ((an*bd) > 2000000000) | ((ad*bn) > 2000000000)){
             let mut ddd = (an*bd + ad*bn)/(ad*bd);
             let mut factor = 1 as u84;
             for i in 1..5{
@@ -210,7 +209,7 @@ fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
     else {
 
         if ((an*bd) > (bn*ad)){
-            if ((ad*bd > 2000000000) | ((an*bd - ad*bn) > 2000000000)){
+            if ((ad*bd > 2000000000) | ((an*bd - ad*bn) > 2000000000) | ((an*bd) > 2000000000)){
                 m = reduceFraction(m);
                 n = reduceFraction(n);
             }
@@ -218,7 +217,9 @@ fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
             ad = m.den as u84;
             bn = n.num as u84;
             bd = n.den as u84;
-            if ((ad*bd > 2000000000) | ((an*bd - ad*bn) > 2000000000)){
+            let prd = ad*bd;
+            let diff = an*bd;
+            if ((ad*bd > 2000000000) | ((an*bd - ad*bn) > 2000000000) | ((an*bd) > 2000000000)){
                 let mut ddd = (an*bd - ad*bn)/(ad*bd);
                 let mut factor = 1 as u84;
                 for i in 1..5{
@@ -245,7 +246,7 @@ fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
             }
         }
         else {
-            if ((ad*bd > 2000000000) | ((bn*ad - bd*an) > 2000000000)){
+            if ((ad*bd > 2000000000) | ((bn*ad - bd*an) > 2000000000) | ((bn*ad) > 2000000000)){
                 m = reduceFraction(m);
                 n = reduceFraction(n);
             }
@@ -253,7 +254,7 @@ fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
             ad = m.den as u84;
             bn = n.num as u84;
             bd = n.den as u84;
-            if ((ad*bd > 2000000000) | ((bn*ad - bd*an) > 2000000000)){
+            if ((ad*bd > 2000000000) | ((bn*ad - bd*an) > 2000000000) | ((bn*ad) > 2000000000)){
                 let mut ddd = (bn*ad - bd*an)/(ad*bd);
                 let mut factor = 1 as u84;
                 for i in 1..5{
@@ -349,11 +350,7 @@ fn compareFraction(f1: Fraction, f2: Fraction) -> u32 {
 
 // Multiplies a fraction by itself
 fn squareFraction(f: Fraction) -> Fraction {
-    let fr = Fraction {
-        sign: true,
-        num: f.num*f.num,
-        den: f.den*f.den,
-    };
+    let fr = multiplyFraction(f, f);
     fr
 }
 
@@ -562,14 +559,14 @@ fn sqrt(x: Fraction) -> Fraction {
         for i in 1..10 {
             c = (q*c_init*c_init + p*d_init*d_init);
             d = 2*q*c_init*d_init;
-            c_init = (c*10000)/d;
-            d_init = 10000;
+            c_init = (c*100000)/d;
+            d_init = 100000;
         }
 
         let fr = Fraction {
             sign: true,
             num: c_init as u32,
-            den: 10000,
+            den: 100000,
         };
         fr  
     }
@@ -968,7 +965,7 @@ fn test_sqrt1(){
 
 #[test]
 fn test_sqrt2(){
-    let f1 = toFraction(true, 999999, 444444);
+    let f1 = toFraction(true, 999999, 444);
     let sqrt = sqrt(f1);
     let delta = subtractFraction(f1, squareFraction(sqrt));
     let epsilon = Fraction {
@@ -976,6 +973,8 @@ fn test_sqrt2(){
         num: 1,
         den: 1000,
     };
+    let p = delta.num;
+    let q = delta.den;
     if !delta.sign {
         assert (compareFraction(epsilon, signChangeFraction(delta)) <= 1);
     }
