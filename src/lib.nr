@@ -49,10 +49,10 @@ fn signChangeFraction(f: Fraction) -> Fraction {
 
 // Multiplies two fractions
 fn multiplyFraction(f1: Fraction, f2: Fraction) -> Fraction {
-    let mut an = uint128::U120::fromInteger(f1.num);
-    let mut ad = f1.den as U120;
-    let mut bn = f2.num as U120;
-    let mut bd = f2.den as U120;
+    let mut an = f1.num as u84;
+    let mut ad = f1.den as u84;
+    let mut bn = f2.num as u84;
+    let mut bd = f2.den as u84;
     let mut m = f1;
     let mut n = f2;
     
