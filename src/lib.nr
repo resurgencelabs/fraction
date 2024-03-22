@@ -1,4 +1,5 @@
 use dep::std;
+use dep::std::uint128;
 global MAX: Fraction = Fraction { sign: true, num: 3050913689, den: 1 };
 global MIN: Fraction = Fraction { sign: false, num: 3050913689, den: 1 };
 global ZERO: Fraction = Fraction { sign: true, num: 0, den: 1 };
@@ -48,10 +49,10 @@ fn signChangeFraction(f: Fraction) -> Fraction {
 
 // Multiplies two fractions
 fn multiplyFraction(f1: Fraction, f2: Fraction) -> Fraction {
-    let mut an = f1.num as u84;
-    let mut ad = f1.den as u84;
-    let mut bn = f2.num as u84;
-    let mut bd = f2.den as u84;
+    let mut an = uint128::U128::from_le_bytes((f1.num as Field).to_le_bytes(3));
+    let mut ad = f1.den as U120;
+    let mut bn = f2.num as U120;
+    let mut bd = f2.den as U120;
     let mut m = f1;
     let mut n = f2;
     
