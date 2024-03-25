@@ -1,5 +1,5 @@
-use dep::std;
-use dep::std::collections;
+use dep::std::{u128::U128};
+
 global MAX: Fraction = Fraction { sign: true, num: 3050913689, den: 1 };
 global MIN: Fraction = Fraction { sign: false, num: 3050913689, den: 1 };
 global ZERO: Fraction = Fraction { sign: true, num: 0, den: 1 };
@@ -49,52 +49,53 @@ fn signChangeFraction(f: Fraction) -> Fraction {
 
 // Multiplies two fractions
 fn multiplyFraction(f1: Fraction, f2: Fraction) -> Fraction {
-    let mut an = f1.num as u84;
-    let mut ad = f1.den as u84;
-    let mut bn = f2.num as u84;
-    let mut bd = f2.den as u84;
+    let mut an = U128::from_integer(f1.num);
+    let mut ad = U128::from_integer(f1.den);
+    let mut bn = U128::from_integer(f2.num);
+    let mut bd = U128::from_integer(f2.den);
     let mut m = f1;
     let mut n = f2;
     
 
-    if ((an*bn > 2000000000) | (ad*bd > 2000000000)) {
+    if ((an*bn > U128::from_integer(2000000000)) | (ad*bd > U128::from_integer(2000000000))) {
         m = reduceFraction(m);
         n = reduceFraction(n);
     }
 
-    an = m.num as u84;
-    ad = m.den as u84;
-    bn = n.num as u84;
-    bd = n.den as u84;
+    an = U128::from_integer(m.num);
+    ad = U128::from_integer(m.den);
+    bn = U128::from_integer(n.num);
+    bd = U128::from_integer(n.den);
 
     
-    if ((an*bn > 2000000000) | (ad*bd > 2000000000)) {
+    if ((an*bn > U128::from_integer(2000000000)) | (ad*bd > U128::from_integer(2000000000))) {
         let mut c = Fraction{ sign: m.sign, num: m.num, den: n.den};
         let mut d = Fraction{ sign: n.sign, num: n.num, den: m.den};
         c = reduceFraction(c);
         d = reduceFraction(d);
-        an = c.num as u84;
-        ad = c.den as u84;
-        bn = d.num as u84;
-        bd = d.den as u84;
+        an = U128::from_integer(c.num);
+        ad = U128::from_integer(c.den);
+        bn = U128::from_integer(d.num);
+        bd = U128::from_integer(d.den);
     }
 
     
     let mut ddd = (an*bn)/(ad*bd);
-    let mut factor = 1 as u84;
+    let mut factor = U128::from_integer(1);
     for i in 1..5{
-        if ddd*10 < 2000000000 {
-            factor *= 10;
-            ddd = ddd * 10;
+        if ddd*U128::from_integer(10) < U128::from_integer(2000000000) {
+            factor *= U128::from_integer(10);
+            ddd = ddd * U128::from_integer(10);
         }
     }
     
-    if ((an*bn > 2000000000) | (ad*bd > 2000000000)) {
-        let np = ((an*bn*factor)/(ad*bd)) as u32;
+    if ((an*bn > U128::from_integer(2000000000)) | (ad*bd > U128::from_integer(2000000000))) {
+        let fx: u32 = U128::to_integer(factor);
+        let np: u32 = U128::to_integer((an*bn*factor)/(ad*bd));
         let fr = Fraction{
             sign: (f1.sign == f2.sign),
             num: np,
-            den: factor as u32,
+            den: fx,
         };
         fr
         
@@ -162,37 +163,38 @@ fn reduceFraction(f: Fraction) -> Fraction {
 
 // Adds two fractions
 fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
-    let mut an = f1.num as u84;
-    let mut ad = f1.den as u84;
-    let mut bn = f2.num as u84;
-    let mut bd = f2.den as u84;
+    let mut an = U128::from_integer(f1.num);
+    let mut ad = U128::from_integer(f1.den);
+    let mut bn = U128::from_integer(f2.num);
+    let mut bd = U128::from_integer(f2.den);
     let mut m = f1;
     let mut n = f2;
 
     if f1.sign == f2.sign {
        
-        if ((ad*bd > 2000000000) | ((an*bd + ad*bn) > 2000000000) | ((an*bd) > 2000000000) | ((ad*bn) > 2000000000)){
+        if ((ad*bd > U128::from_integer(2000000000)) | ((an*bd + ad*bn) > U128::from_integer(2000000000)) | ((an*bd) > U128::from_integer(2000000000)) | ((ad*bn) > U128::from_integer(2000000000))){
             m = reduceFraction(m);
             n = reduceFraction(n);
         }
-        an = m.num as u84;
-        ad = m.den as u84;
-        bn = n.num as u84;
-        bd = n.den as u84;
-        if ((ad*bd > 2000000000) | ((an*bd + ad*bn) > 2000000000) | ((an*bd) > 2000000000) | ((ad*bn) > 2000000000)){
+        an = U128::from_integer(m.num);
+        ad = U128::from_integer(m.den);
+        bn = U128::from_integer(n.num);
+        bd = U128::from_integer(n.den);
+        if ((ad*bd > U128::from_integer(2000000000)) | ((an*bd + ad*bn) > U128::from_integer(2000000000)) | ((an*bd) > U128::from_integer(2000000000)) | ((ad*bn) > U128::from_integer(2000000000))){
             let mut ddd = (an*bd + ad*bn)/(ad*bd);
-            let mut factor = 1 as u84;
+            let mut factor = U128::from_integer(1);
             for i in 1..5{
-                if ddd*10 < 2000000000 {
-                    ddd *= 10;
-                    factor *= 10;
+                if ddd*U128::from_integer(10) < U128::from_integer(2000000000) {
+                    ddd *= U128::from_integer(10);
+                    factor *= U128::from_integer(10);
                 }
             }
-            let np = (((an*bd + ad*bn)*factor)/(ad*bd)) as u32;
+            let np: u32 = U128::to_integer(((an*bd + ad*bn)*factor)/(ad*bd));
+            let fx: u32 = U128::to_integer(factor);
             let fr = Fraction {
                 sign: f1.sign,
                 num: np,
-                den: factor as u32, 
+                den: fx, 
             };
             fr
         }
@@ -210,30 +212,30 @@ fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
     else {
 
         if ((an*bd) > (bn*ad)){
-            if ((ad*bd > 2000000000) | ((an*bd - ad*bn) > 2000000000) | ((an*bd) > 2000000000)){
+            if ((ad*bd > U128::from_integer(2000000000)) | ((an*bd - ad*bn) > U128::from_integer(2000000000)) | ((an*bd) > U128::from_integer(2000000000))){
                 m = reduceFraction(m);
                 n = reduceFraction(n);
             }
-            an = m.num as u84;
-            ad = m.den as u84;
-            bn = n.num as u84;
-            bd = n.den as u84;
-            let prd = ad*bd;
-            let diff = an*bd;
-            if ((ad*bd > 2000000000) | ((an*bd - ad*bn) > 2000000000) | ((an*bd) > 2000000000)){
+            an = U128::from_integer(m.num);
+            ad = U128::from_integer(m.den);
+            bn = U128::from_integer(n.num);
+            bd = U128::from_integer(n.den);
+            
+            if ((ad*bd > U128::from_integer(2000000000)) | ((an*bd - ad*bn) > U128::from_integer(2000000000)) | ((an*bd) > U128::from_integer(2000000000))){
                 let mut ddd = (an*bd - ad*bn)/(ad*bd);
-                let mut factor = 1 as u84;
+                let mut factor = U128::from_integer(1);
                 for i in 1..5{
-                    if ddd*10 < 2000000000 {
-                        ddd *= 10;
-                        factor *= 10;
+                    if ddd*U128::from_integer(10) < U128::from_integer(2000000000) {
+                        ddd *= U128::from_integer(10);
+                        factor *= U128::from_integer(10);
                     }
                 }
-                let np = (((an*bd - ad*bn)*factor)/(ad*bd)) as u32;
+                let np: u32 = U128::to_integer(((an*bd - ad*bn)*factor)/(ad*bd));
+                let fx: u32 = U128::to_integer(factor);
                 let fr = Fraction {
                     sign: f1.sign,
                     num: np,
-                    den: factor as u32, 
+                    den: fx, 
                 };
                 fr
             }
@@ -247,28 +249,29 @@ fn addFraction(f1: Fraction, f2: Fraction) -> Fraction {
             }
         }
         else {
-            if ((ad*bd > 2000000000) | ((bn*ad - bd*an) > 2000000000) | ((bn*ad) > 2000000000)){
+            if ((ad*bd > U128::from_integer(2000000000)) | ((bn*ad - bd*an) > U128::from_integer(2000000000)) | ((bn*ad) > U128::from_integer(2000000000))){
                 m = reduceFraction(m);
                 n = reduceFraction(n);
             }
-            an = m.num as u84;
-            ad = m.den as u84;
-            bn = n.num as u84;
-            bd = n.den as u84;
-            if ((ad*bd > 2000000000) | ((bn*ad - bd*an) > 2000000000) | ((bn*ad) > 2000000000)){
+            an = U128::from_integer(m.num);
+            ad = U128::from_integer(m.den);
+            bn = U128::from_integer(n.num);
+            bd = U128::from_integer(n.den);
+            if ((ad*bd > U128::from_integer(2000000000)) | ((bn*ad - bd*an) > U128::from_integer(2000000000)) | ((bn*ad) > U128::from_integer(2000000000))){
                 let mut ddd = (bn*ad - bd*an)/(ad*bd);
-                let mut factor = 1 as u84;
+                let mut factor = U128::from_integer(1);
                 for i in 1..5{
-                    if ddd*10 < 2000000000 {
-                        ddd *= 10;
-                        factor *= 10;
+                    if ddd*U128::from_integer(10) < U128::from_integer(2000000000) {
+                        ddd *= U128::from_integer(10);
+                        factor *= U128::from_integer(10);
                     }
                 }
-                let np = (((bn*ad - bd*an)*factor)/(ad*bd)) as u32;
+                let np: u32 = U128::to_integer(((bn*ad - bd*an)*factor)/(ad*bd));
+                let fx: u32 = U128::to_integer(factor);
                 let fr = Fraction {
                     sign: f2.sign,
                     num: np,
-                    den: factor as u32, 
+                    den: fx, 
                 };
                 fr
             }
@@ -372,13 +375,13 @@ fn powerSmallFraction(f: Fraction, k: u8) -> Fraction {
     assert (k >= 1);
     assert (k < 10);
     assert ((f.num * 7) <= (11 * f.den));
-    let mut n = f.num as u120;
-    let mut d = f.den as u120;
+    let mut n = U128::from_integer(f.num);
+    let mut d = U128::from_integer(f.den);
     if f.den > 10000 {
-        n = (n*10000)/d;
-        d = 10000;
+        n = (n*U128::from_integer(10000))/d;
+        d = U128::from_integer(10000);
     }
-    if n == 0{
+    if n == U128::from_integer(0){
         let fr = Fraction {
             sign: true,
             num: 0,
@@ -387,8 +390,8 @@ fn powerSmallFraction(f: Fraction, k: u8) -> Fraction {
         fr
     }
     else {
-        let mut nprod: u120 = 1;
-        let mut dprod: u120 = 1;
+        let mut nprod = U128::from_integer(1);
+        let mut dprod = U128::from_integer(1);
         let mut s = true;
         if ((!f.sign) & (k % 2 == 1)){
             s = false;
@@ -399,7 +402,7 @@ fn powerSmallFraction(f: Fraction, k: u8) -> Fraction {
                 dprod = dprod * d;
             }
         }
-        let new_num = ((nprod*10000)/dprod) as u32;
+        let new_num: u32 = U128::to_integer((nprod*U128::from_integer(10000))/dprod);
         let fr = Fraction {
             sign: s,
             num: new_num,
@@ -552,11 +555,11 @@ unconstrained fn sqrt(x: Fraction, passes: u8) -> Fraction {
             den: x.den,
         };
         
-        let p = x.num as u120;
-        let q = x.den as u120;
+        let p = U128::from_integer(x.num);
+        let q = U128::from_integer(x.den);
 
-        let mut c_init = sqrt_approx.num as u120;
-        let mut d_init = sqrt_approx.den as u120;
+        let mut c_init = U128::from_integer(sqrt_approx.num);
+        let mut d_init = U128::from_integer(sqrt_approx.den);
 
         let mut c = c_init;
         let mut d = d_init;
@@ -564,14 +567,15 @@ unconstrained fn sqrt(x: Fraction, passes: u8) -> Fraction {
 
         for i in 0..passes {
             c = (q*c_init*c_init + p*d_init*d_init);
-            d = 2*q*c_init*d_init;
-            c_init = (c*1000000)/d;
-            d_init = 1000000;
+            d = U128::from_integer(2)*q*c_init*d_init;
+            c_init = (c*U128::from_integer(1000000))/d;
+            d_init = U128::from_integer(1000000);
         }
 
+        let numx: u32 = U128::to_integer(c_init);
         let fr = Fraction {
             sign: true,
-            num: c_init as u32,
+            num: numx,
             den: 1000000,
         };
         fr  
