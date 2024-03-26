@@ -1,4 +1,4 @@
-use dep::std::{u128::U128};
+use dep::std;
 
 global MAX: Fraction = Fraction { sign: true, num: 3050913689, den: 1 };
 global MIN: Fraction = Fraction { sign: false, num: 3050913689, den: 1 };
